@@ -29,7 +29,7 @@
 //        //Goes to specified site
 //        await page.GotoAsync(url: "http://www.eaapp.somee.com");
 //        //Click specified button, in this case 'Login' button
-//        await page.ClickAsync(selector:"text=Login");
+//        await page.ClickAsync(selector: "text=Login");
 //        //Takes a screenshot of completed action
 //        await page.ScreenshotAsync(new PageScreenshotOptions
 //        {
@@ -41,11 +41,8 @@
 //        await page.FillAsync(selector: "#Password", value: "password");
 //        await page.ClickAsync(selector: "text=Log in");
 //        //Verify if link exists
-//        var isExist = await page.Locator(selector:"text='Employee Details'").IsVisibleAsync();
+//        var isExist = await page.Locator(selector: "text='Employee Details'").IsVisibleAsync();
 //        //'That' condition is new version of IsTrue (deprecated)
 //        Assert.That(isExist);
-
-
-//        Assert.Pass();
 //    }
 //}

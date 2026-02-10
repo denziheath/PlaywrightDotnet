@@ -20,10 +20,15 @@ public class NUnitPlaywright : PageTest
     [Test]
     public async Task Test1()
     {
+        var lnkLogin = Page.Locator(selector: "text=Login");
+        await lnkLogin.ClickAsync();
         await Page.ClickAsync(selector:"text=Login");
         await Page.FillAsync(selector: "#UserName", value: "admin");
         await Page.FillAsync(selector: "#Password", value: "password");
-        await Page.ClickAsync(selector: "text=Log in");
+
+        var btnLogin = Page.Locator(selector: "input", new PageLocatorOptions { HasTextString = "Log in" });
+        await btnLogin.ClickAsync();
+        //await Page.ClickAsync(selector: "text=Log in");
         //The 'Expect' and 'ToBeVisibleAsync' takes place of the 'isExist' and 'Assert'
         await Expect(Page.Locator(selector:"text='Employee Details'")).ToBeVisibleAsync();
 
