@@ -77,7 +77,7 @@ public class Tests
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
             Headless = false,
-          //SlowMo = 1000
+            SlowMo = 1000
         });
         var content = await browser.NewContextAsync();
         var page = await content.NewPageAsync();
@@ -90,6 +90,7 @@ public class Tests
 
         await page.GetByText("Click here to open the window.").ClickAsync();
     }
+
 
 
     [Test]
@@ -109,16 +110,49 @@ public class Tests
         await loginPage.Login(userName: "admin", password: "password");
 
         //Get more details from api call using WaitForResponseAsync opposed to WaitForRequestAsync
-        //var waitResponse = page.WaitForResponseAsync("**/Employee");
-        //await loginPage.ClickEmployeeList();
-        //var getResponse = await waitResponse;
+        var waitResponse = page.WaitForResponseAsync("**/Employee");
+        await loginPage.ClickEmployeeList();
+        //Place breakpoint on this line
+        var getResponse = await waitResponse;
 
-        var response = await page.RunAndWaitForResponseAsync(async () =>
-        {
-            await loginPage.ClickEmployeeList();
-        }, x => x.Url.Contains("/Employee"));
+
+        //Same way to do what was done above
+        //var response = await page.RunAndWaitForResponseAsync(async () =>
+        //{
+        //    await loginPage.ClickEmployeeList();
+        //}, x => x.Url.Contains("/Employee"));
+
 
         var isExist = await loginPage.IsEmployeeDetailsExists();
         Assert.That(isExist);
+    }
+
+
+
+    [Test]
+
+    public async Task Flipkart()
+    {
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = false
+        });
+        var context = await browser.NewContextAsync();
+        var page = await browser.NewPageAsync();
+        await page.GotoAsync(url: "https://www.flipkart.com", new PageGotoOptions
+        {
+            WaitUntil = WaitUntilState.NetworkIdle
+        });
+        //await page.Locator(selector:"text=x").ClickAsync();
+
+        await page.GetByLabel("Login").ClickAsync();
+        await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
+
+        var response = await page.RunAndWaitForRequestAsync(async () =>
+        {
+            await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
+            //URL below is tracker after clicking Login
+        }, Login => Login.Url.Contains("https://dpm.demdex.net") && Login.Method == "GET");
     }
 }
