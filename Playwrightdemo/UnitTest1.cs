@@ -60,7 +60,8 @@ public class Tests
         var page = await browser.NewPageAsync();
         await page.GotoAsync(url: "http://www.eaapp.somee.com");
 
-        LoginPage loginPage = new LoginPage(page);
+        //Can swap LoginPageUpgraded with LoginPage
+        var loginPage = new LoginPageUpgraded(page);
         await loginPage.ClickLogin();
         await loginPage.Login(userName: "admin", password: "password");
         var isExist = await loginPage.IsEmployeeDetailsExists();
@@ -88,5 +89,36 @@ public class Tests
         await page.GetByRole(AriaRole.Button, new() { Name = "Close" }).ClickAsync();
 
         await page.GetByText("Click here to open the window.").ClickAsync();
+    }
+
+
+    [Test]
+    public async Task TestNetwork()
+    {
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = false
+        });
+
+        var page = await browser.NewPageAsync();
+        await page.GotoAsync(url: "http://www.eaapp.somee.com");
+
+        var loginPage = new LoginPageUpgraded(page);
+        await loginPage.ClickLogin();
+        await loginPage.Login(userName: "admin", password: "password");
+
+        //Get more details from api call using WaitForResponseAsync opposed to WaitForRequestAsync
+        //var waitResponse = page.WaitForResponseAsync("**/Employee");
+        //await loginPage.ClickEmployeeList();
+        //var getResponse = await waitResponse;
+
+        var response = await page.RunAndWaitForResponseAsync(async () =>
+        {
+            await loginPage.ClickEmployeeList();
+        }, x => x.Url.Contains("/Employee"));
+
+        var isExist = await loginPage.IsEmployeeDetailsExists();
+        Assert.That(isExist);
     }
 }

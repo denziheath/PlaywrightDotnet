@@ -26,8 +26,6 @@ public class LoginPage
         _lnkEmployeeDetails = _page.Locator(selector: "text='Employee Details'");
 	}
 
-    public async Task ClickLogin() => await _lnkLogin.ClickAsync();
-
     public async Task Login(string userName, string password)
     {
         await _txtUserName.FillAsync(userName);
