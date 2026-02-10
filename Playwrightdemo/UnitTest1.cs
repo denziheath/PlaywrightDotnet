@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Playwright;
 using NUnit.Framework;
+using Playwrightdemo.Pages;
 
 namespace Playwrightdemo;
 
@@ -45,6 +46,27 @@ public class Tests
         //'That' condition is new version of IsTrue (deprecated)
         Assert.That(isExist);
     }
+
+
+
+    [Test]
+    public async Task TestWithPOM()
+    {
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = false
+        });
+        var page = await browser.NewPageAsync();
+        await page.GotoAsync(url: "http://www.eaapp.somee.com");
+
+        LoginPage loginPage = new LoginPage(page);
+        await loginPage.ClickLogin();
+        await loginPage.Login(userName: "admin", password: "password");
+        var isExist = await loginPage.IsEmployeeDetailsExists();
+        Assert.That(isExist);
+    }
+
 
 
     [Test]
