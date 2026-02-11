@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using System.Web;
+using FluentAssertions;
 using Microsoft.Playwright;
 using NUnit.Framework;
 using Playwrightdemo.Pages;
@@ -70,6 +72,7 @@ public class Tests
 
 
 
+    //THIS TEST OPENS AND CLOSES A WINDOW WITHIN A BROWSER
     [Test]
     public async Task WaitTest()
     {
@@ -77,7 +80,7 @@ public class Tests
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
             Headless = false,
-            SlowMo = 1000
+            //SlowMo = 1000
         });
         var content = await browser.NewContextAsync();
         var page = await content.NewPageAsync();
@@ -93,6 +96,7 @@ public class Tests
 
 
 
+    //THIS TEST IS FOR API CALLS/RESPONSES
     [Test]
     public async Task TestNetwork()
     {
@@ -129,6 +133,8 @@ public class Tests
 
 
 
+    //THIS TEST IS FOR TRACKERS ON WEBSITES
+    //Don't run this one, it's kinda messed up. The site in the video updated and I couldn't find any that had trackers for every click you made
     [Test]
 
     public async Task Flipkart()
@@ -149,10 +155,47 @@ public class Tests
         await page.GetByLabel("Login").ClickAsync();
         await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
 
-        var response = await page.RunAndWaitForRequestAsync(async () =>
+        var request = await page.RunAndWaitForRequestAsync(async () =>
         {
             await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
             //URL below is tracker after clicking Login
         }, Login => Login.Url.Contains("https://dpm.demdex.net") && Login.Method == "GET");
+
+        var returnData = HttpUtility.UrlDecode(request.Url);
+
+        returnData.Should().Contain("Account Login:Displayed Exit");
+    }
+
+
+    [Test]
+
+    public async Task FlipkartNetworkInterception()
+    {
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = false
+        });
+        var context = await browser.NewContextAsync();
+        var page = await browser.NewPageAsync();
+
+        //checks what url is being called and what is the request
+        //Check test output for results
+        page.Request += (_, request) => Console.WriteLine(request.Method + "---" + request.Url);
+
+
+        //For any url on the site, if there is img request - abort request (dont load), any other resource loads
+        await page.RouteAsync(url: "**/*", async route =>
+        {
+            if (route.Request.ResourceType == "image")
+                await route.AbortAsync();
+            else
+                await route.ContinueAsync();
+        });
+
+        await page.GotoAsync(url: "https://www.flipkart.com", new PageGotoOptions
+        {
+            WaitUntil = WaitUntilState.NetworkIdle
+        });
     }
 }

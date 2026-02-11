@@ -528,3 +528,4 @@ C:\Users\denzi\OneDrive\Desktop\Projects\PlaywrightDotnet\Playwrightdemo\obj\Deb
 C:\Users\denzi\OneDrive\Desktop\Projects\PlaywrightDotnet\Playwrightdemo\obj\Debug\net10.0\Playwrightdemo.pdb
 C:\Users\denzi\OneDrive\Desktop\Projects\PlaywrightDotnet\Playwrightdemo\obj\Debug\net10.0\Playwrightdemo.genruntimeconfig.cache
 C:\Users\denzi\OneDrive\Desktop\Projects\PlaywrightDotnet\Playwrightdemo\obj\Debug\net10.0\ref\Playwrightdemo.dll
+C:\Users\denzi\OneDrive\Desktop\Projects\PlaywrightDotnet\Playwrightdemo\bin\Debug\net10.0\FluentAssertions.dll
